@@ -4,6 +4,15 @@ import { getInitialItem } from './utils';
 export class Store {
   protected store: TStore = {};
 
+  constructor() {
+    this.notify = this.notify.call(this);
+    this.subscribe = this.subscribe.call(this);
+    this.removeSubscriber = this.removeSubscriber.call(this);
+    this.getItem = this.getItem.call(this);
+    this.setItem = this.setItem.call(this);
+    this.setItemError = this.setItemError.call(this);
+  }
+
   public notify(key: string) {
     const { subscribers, state } = this.store[key];
     subscribers.forEach(subscriber => subscriber(state));
@@ -47,9 +56,5 @@ export class Store {
       isError: true,
       error: message,
     };
-  }
-
-  public getStr() {
-    return this.store;
   }
 }

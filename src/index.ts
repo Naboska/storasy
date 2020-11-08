@@ -1,13 +1,17 @@
+import { storasy } from './storasy';
+
 export { initStoreOptions } from './utils';
 
-export {
+export const {
   getItem,
   setItem,
   call,
+  runner,
   subscribe,
   removeSubscriber,
-  runner,
   getAbortController,
   setAsyncEvents,
-  asyncEvents,
-} from './storasy';
+  getAsyncEvents,
+} = storasy;
+
+export type { TAsyncEvents, TStoreItemData, TStoreSubscriber } from './types';

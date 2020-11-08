@@ -3,14 +3,28 @@ import { TAsyncEvents } from './types';
 import { isPromise } from './utils';
 
 export class AsyncStore extends Store {
-  public asyncEvents: TAsyncEvents = {
+  private asyncEvents: TAsyncEvents = {
     controller: () => new AbortController(),
     signal: (controller: AbortController) => controller.signal,
     abort: (controller: AbortController) => controller.abort(),
   };
 
+  constructor() {
+    super();
+
+    this.getAsyncEvents = this.getAsyncEvents.bind(this);
+    this.setAsyncEvents = this.setAsyncEvents.bind(this);
+    this.getAbortController = this.getAbortController.bind(this);
+    this.call = this.call.bind(this);
+    this.runner = this.runner.bind(this);
+  }
+
   public setAsyncEvents(events: TAsyncEvents) {
     this.asyncEvents = events;
+  }
+
+  public getAsyncEvents(): TAsyncEvents {
+    return this.asyncEvents;
   }
 
   public getAbortController(key: string) {
