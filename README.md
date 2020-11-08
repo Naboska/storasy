@@ -31,9 +31,36 @@ npm install @storasy/core
 
 ## Quick Start
 
+#### NodeJS
+
 ```js
 import { subscribe } from '@storasy/core';
 //in progress
+```
+
+#### Browser
+
+Works by providing a library of "[SystemJS](https://github.com/systemjs/systemjs)"
+
+```html
+    ...
+    <head>
+        <script type="systemjs-importmap">
+          {
+            "imports": {
+              "@storasy/core": "https://cdn.jsdelivr.net/npm/@storasy/core@version/dist/browser.js"
+            }
+          }
+        </script>
+    </head>
+    <body>
+    ...
+    <script src="https://cdn.jsdelivr.net/npm/systemjs/dist/system.min.js"></script>
+    <script>
+          System.import('@storasy/core');
+    </script>
+    ...
+    </body>
 ```
 
 ### API

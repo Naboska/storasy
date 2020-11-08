@@ -4,6 +4,7 @@
     "declaration": true,
     "skipLibCheck": true,
     "downlevelIteration": true,
-    "lib": ["ESNext", "DOM"]
+    "lib": ["ESNext", "DOM"],
+    "target": "ES5"
   }
 }
