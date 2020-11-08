@@ -46,7 +46,7 @@ import { subscribe } from '@storasy/core';
 
 - [Configuration](#configuration)
 
-### Global Configuration
+### Configuration
 
 The storage configuration takes place through the function `initStoreOptions`.
 
