@@ -1,0 +1,53 @@
+{
+  "name": "storasy",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": {
+    "name": "Dmitry Filatov",
+    "email": "Naboos@yandex.com",
+    "url": "https://github.com/Naboska"
+  },
+  "homepage": "https://github.com/Naboska/storasy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Naboska/storasy"
+  },
+  "bugs": {
+    "url": "https://github.com/Naboska/storasy/issues"
+  },
+  "keywords": [
+    "javascript",
+    "async",
+    "generator",
+    "store"
+  ],
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.6.1",
+    "@typescript-eslint/parser": "^4.6.1",
+    "eslint": "^7.13.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.1.4",
+    "husky": "^4.3.0",
+    "prettier": "^2.1.2",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.0.5"
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc --target es5 --outDir dist",
+    "lint": "eslint \"./**/*.ts\" --fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "npm run lint"
+    ]
+  }
+}
