@@ -58,13 +58,15 @@ The storage configuration takes place through the function `initStoreOptions`.
 
 ##### Configure axios request:
 ```ts
-import { initStoreOptions } from '@storasy/core';
+import { initStoreOptions, ABORT_CONTROLLER_MESSAGE } from '@storasy/core';
 import axios, { CancelTokenSource } from 'axios';
+
+//ABORT_CONTROLLER_MESSAGE need for check error.message
 
 initStoreOptions({
   asyncEvents: {
     controller: () => axios.CancelToken.source(),
-    abort: (token: CancelTokenSource) => token.cancel(),
+    abort: (token: CancelTokenSource) => token.cancel(ABORT_CONTROLLER_MESSAGE),
     signal: (token: CancelTokenSource) => token.token,
   },
 })

@@ -1,3 +1,4 @@
+import { ABORT_CONTROLLER_MESSAGE } from './constants';
 import { Store } from './store';
 import { TAsyncEvents } from './types';
 import { isPromise } from './utils';
@@ -59,7 +60,7 @@ export class AsyncStore extends Store {
     generator: Generator<any>,
     error: Error & { status: string }
   ) {
-    if (error.status === 'cancelled') generator.return(error);
+    if (error.message === ABORT_CONTROLLER_MESSAGE) generator.return(error);
     else {
       this.setItemError(key, error.message);
       generator.throw(error);

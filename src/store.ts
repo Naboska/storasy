@@ -5,17 +5,20 @@ export class Store {
   protected store: TStore = {};
 
   constructor() {
-    this.notify = this.notify.call(this);
-    this.subscribe = this.subscribe.call(this);
-    this.removeSubscriber = this.removeSubscriber.call(this);
-    this.getItem = this.getItem.call(this);
-    this.setItem = this.setItem.call(this);
-    this.setItemError = this.setItemError.call(this);
+    this.notify = this.notify.bind(this);
+    this.subscribe = this.subscribe.bind(this);
+    this.removeSubscriber = this.removeSubscriber.bind(this);
+    this.getItem = this.getItem.bind(this);
+    this.setItem = this.setItem.bind(this);
+    this.setItemError = this.setItemError.bind(this);
   }
 
   public notify(key: string) {
-    const { subscribers, state } = this.store[key];
-    subscribers.forEach(subscriber => subscriber(state));
+    const item = this.store[key];
+    if (item) {
+      const { subscribers, state } = item;
+      subscribers.forEach(subscriber => subscriber(state));
+    }
   }
 
   public subscribe(key: string, subscriber: TStoreSubscriber) {

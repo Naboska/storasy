@@ -1,6 +1,8 @@
 import { storasy } from './storasy';
 
-export { initStoreOptions } from './utils';
+export { ABORT_CONTROLLER_MESSAGE } from './constants';
+
+export { initStoreOptions, getInitialItem } from './utils';
 
 export const {
   getItem,
@@ -15,3 +17,5 @@ export const {
 } = storasy;
 
 export type { TAsyncEvents, TStoreItemData, TStoreSubscriber } from './types';
+
+export default storasy;
