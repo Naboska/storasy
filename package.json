@@ -1,6 +1,6 @@
 {
   "name": "@storasy/core",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "license": "MIT",
   "author": {
     "name": "Dmitry Filatov",
@@ -41,7 +41,7 @@
   },
   "scripts": {
     "build-module": "rimraf dist && tsc",
-    "build-browser": "tsc --outFile 'dist/browser.js' --module 'amd'",
+    "build-browser": "tsc --outFile 'dist/browser.js' --module 'system'",
     "build": "yarn build-module && yarn build-browser",
     "lint": "eslint \"./**/*.ts\" --fix"
   },
