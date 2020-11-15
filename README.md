@@ -80,6 +80,7 @@ Works by providing a library of "[SystemJS](https://github.com/systemjs/systemjs
 
 ## Examples
 
+- [SystemJS (DEMO)](https://github.com/Naboska/storasy/tree/main/examples/browser)
 - [Configuration](#configuration)
 
 ### Configuration
