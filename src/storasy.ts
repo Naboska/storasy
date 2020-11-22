@@ -44,7 +44,7 @@ class Store {
     return this.store[key]?.state?.data;
   }
 
-  public setItem<T = any, U = any>(key: string, callback: (data?: TStoreItemData<T>) => U) {
+  public setItem<R = any>(key: string, callback: <T>(data?: T) => R) {
     this.store[key].state = {
       ...this.store[key].state,
       data: callback(this.getItem(key)),
