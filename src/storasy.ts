@@ -149,18 +149,4 @@ class AsyncStore extends Store {
   }
 }
 
-const storasy = new AsyncStore();
-
-export const {
-  getItem,
-  setItem,
-  call,
-  runner,
-  subscribe,
-  removeSubscriber,
-  getAbortController,
-  setAsyncEvents,
-  getAsyncEvents,
-} = storasy;
-
-export default storasy;
+export const storasy = new AsyncStore();

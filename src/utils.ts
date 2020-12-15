@@ -1,10 +1,10 @@
 import { TAsyncEvents, TStoreItem } from './types';
-import { setAsyncEvents } from './storasy';
+import { storasy } from './storasy';
 
 export const isPromise = (promise: any): boolean => promise && Promise.resolve(promise) === promise;
 
 export const initStoreOptions = ({ asyncEvents }: { asyncEvents: TAsyncEvents }) => {
-  setAsyncEvents(asyncEvents);
+  storasy.setAsyncEvents(asyncEvents);
 };
 
 export const getInitialItem = (): TStoreItem => ({

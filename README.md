@@ -56,7 +56,7 @@ Works by providing a library of "[SystemJS](https://github.com/systemjs/systemjs
         
         async function main() {
             //TODO https://github.com/systemjs/systemjs/issues/2192
-            await System.import('https://unpkg.com/@storasy/core/dist/browser.js').catch(() => void 0);
+            await System.import('https://unpkg.com/@storasy/core/dist/system/storasy.production.js').catch(() => void 0);
             await System.import("index").then(modules => storasy = modules);
             controller()
         }
