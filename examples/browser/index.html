@@ -68,16 +68,12 @@
 <script src="https://unpkg.com/systemjs/dist/extras/named-register.js"></script>
 
 <script type="module">
-  let storasy;
-
   async function main() {
-    //TODO https://github.com/systemjs/systemjs/issues/2192
-    await System.import('https://unpkg.com/@storasy/core/dist/browser.js').catch(() => void 0);
-    await System.import("index").then(modules => storasy = modules)
-    controller();
+    window.storasy = await System.import('https://unpkg.com/@storasy/core/dist/system/storasy.production.js');
+    start();
   }
 
-  function controller() {
+  function start() {
     userDataView('userData');
     getUserButtonModel('userData');
   }

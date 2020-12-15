@@ -49,22 +49,20 @@ Works by providing a library of "[SystemJS](https://github.com/systemjs/systemjs
     ...
     <body>
     ...
+    <div id="test"></div>
+    ...
     <script src="https://unpkg.com/systemjs/dist/system.js"></script>
     <script src="https://unpkg.com/systemjs/dist/extras/named-register.js"></script>
     <script>
-        let storasy;
-        
         async function main() {
-            //TODO https://github.com/systemjs/systemjs/issues/2192
-            await System.import('https://unpkg.com/@storasy/core/dist/system/storasy.production.js').catch(() => void 0);
-            await System.import("index").then(modules => storasy = modules);
-            controller()
+          window.storasy = await System.import('https://unpkg.com/@storasy/core/dist/system/storasy.production.js');
+          start();
         }
 
-        function controller() {
-            let items;
-            storasy.subscribe('key', data => items = data)
-        }   
+        function start() {
+          const element = document.getElementById('test');
+          storasy.subscribe('key', data => element.innerHTML = JSON.stringify(data));
+        }
         
         main();
     </script>
