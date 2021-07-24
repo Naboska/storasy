@@ -1,5 +1,6 @@
 import { TAsyncEvents, TStoreItem } from './types';
 import { storasy } from './storasy';
+import { ICreateItem, TItem } from './create-item';
 
 export const isPromise = (promise: any): boolean => promise && Promise.resolve(promise) === promise;
 
@@ -17,3 +18,7 @@ export const getInitialItem = (): TStoreItem => ({
   },
   subscribers: [],
 });
+
+export const put = <T>(data: any) => (item: ICreateItem<T>) => {
+  console.log(item);
+};
