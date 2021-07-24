@@ -1,26 +1,25 @@
 import { isPromise } from './utils';
 import type { ICreateItem } from './create-item';
-import type { TStorasyClient } from './create-storasy-client';
+import type { TStorasyClient, TAbortController } from './create-storasy-client';
 import { ABORT_CONTROLLER_MESSAGE } from './constants';
 
-type TCreateAsync<GAbortController> = Pick<
-  TStorasyClient<GAbortController>,
-  'abortController' | 'abortSignal' | 'abort'
-> & {
-  getStore: <T>() => Map<string, ICreateItem<T>>;
+type TCreateAsync<AbortController> = Pick<TStorasyClient<AbortController>, 'abortController'> & {
+  getStore: <T>() => Map<string, ICreateItem<T, AbortController>>;
 };
 
 type TError = Error & { status: string };
 
-export const createAsync = <GAbortController>({
+const getInitialAc = (): TAbortController<AbortController> => ({
+  createAbortController: () => new AbortController(),
+  getSignal: controller => controller.signal,
+  abort: controller => controller.abort(),
+});
+
+export const createAsync = <AbortController>({
   getStore,
-  abortController: userAbortController,
-  abort: userAbortSignal,
-  abortSignal: userAbort,
-}: TCreateAsync<GAbortController>) => {
-  const abortController = userAbortController ?? (() => new AbortController());
-  const abortSignal = userAbortSignal ?? ((controller: AbortController) => controller.signal);
-  const abort = userAbort ?? ((controller: AbortController) => controller.abort());
+  abortController,
+}: TCreateAsync<AbortController>) => {
+  const ac = abortController ?? getInitialAc();
 
   const _createGeneratorError = (key: string, generator: Generator<any>, error: TError) => {
     const item = getStore<unknown>().get(key);
@@ -40,15 +39,12 @@ export const createAsync = <GAbortController>({
     payload?: IteratorResult<any> | any[]
   ) => {
     const store = getStore<T>();
+    const item = store.get(key);
     const result = generator.next(payload);
     const isProcessing = !result.done && store.has(key);
-    let action = result.value;
 
     if (isProcessing) {
-      if (typeof action === 'function') {
-        const item = store.get(key);
-        action(item);
-      }
+      const action = typeof result.value === 'function' ? result.value(item, ac) : result.value;
 
       if (!isPromise(action)) return _runner(key, generator, payload);
 

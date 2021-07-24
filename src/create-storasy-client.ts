@@ -2,33 +2,30 @@ import type { ICreateItem, TItemSubscribe } from './create-item';
 import { createItem, TEditState } from './create-item';
 import { createAsync } from './create-async';
 
-export type TStorasyClient<GAbortController = AbortController> = {
-  abortController?: () => GAbortController;
-  abortSignal?: (controller: GAbortController) => any;
-  abort?: (controller: GAbortController) => any;
+export type TAbortController<AbortController> = {
+  createAbortController: () => AbortController;
+  getSignal: (controller: AbortController) => any;
+  abort: (controller: AbortController) => any;
+};
+
+export type TStorasyClient<AbortController> = {
+  abortController?: TAbortController<AbortController>;
 };
 
 export const createStorasyClient = <GAbortController = AbortController>({
   abortController,
-  abortSignal,
-  abort,
 }: TStorasyClient<GAbortController> = {}) => {
   const instance = new Map();
 
-  const _getStore = <T>() => instance as Map<string, ICreateItem<T>>;
+  const _getStore = <T>() => instance as Map<string, ICreateItem<T, GAbortController>>;
 
-  const async = createAsync<GAbortController>({
-    abortController,
-    abortSignal,
-    abort,
-    getStore: _getStore,
-  });
+  const async = createAsync<GAbortController>({ abortController, getStore: _getStore });
 
   const _getItem = <T>(key: string, initial?: T) => {
     const store = _getStore<T>();
     const include = store.has(key);
 
-    if (!include) store.set(key, createItem<T>(initial));
+    if (!include) store.set(key, createItem<T, GAbortController>(initial));
 
     return store.get(key);
   };

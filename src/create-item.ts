@@ -2,7 +2,7 @@ import { createEvents } from './create-events';
 
 export type TEditState<T> = (oldState: T | undefined) => T;
 
-type TItemStatus = 'stale' | 'loading' | 'loaded';
+export type TItemStatus = 'stale' | 'loading' | 'loaded';
 
 export type TItem<T> = {
   state: T;
@@ -16,18 +16,25 @@ export type TItem<T> = {
 
 export type TItemSubscribe<T> = (item: TItem<T>) => void;
 
-export interface ICreateItem<T> {
+export interface ICreateItem<T, GAbortController = AbortController> {
   getState: () => T;
   putState: (newState: T | TEditState<T>) => void;
   putStatus: (newStatus: Exclude<TItemStatus, 'stale'>) => void;
-  putItem: (newState: T, newStatus: Exclude<TItemStatus, 'stale'>, newError?: string) => void;
+  putItem: (
+    newState: T | TEditState<T>,
+    newStatus: Exclude<TItemStatus, 'stale'>,
+    newError?: string
+  ) => void;
   subscribe: (sub: TItemSubscribe<T>) => () => void;
+  getAbortController: () => GAbortController | undefined;
+  setAbortController: (newController: GAbortController) => GAbortController;
 }
 
-export const createItem = <T>(initial?: T): ICreateItem<T> => {
+export const createItem = <T, AbortController>(initial?: T): ICreateItem<T, AbortController> => {
   let state = initial;
   let status: TItemStatus = 'stale';
   let error: string = undefined;
+  let abortController: AbortController;
 
   const subscribers = createEvents<(state: TItem<T>) => void>();
 
@@ -54,7 +61,7 @@ export const createItem = <T>(initial?: T): ICreateItem<T> => {
       _notify();
     },
     putItem(newState, newStatus, newError) {
-      state = newState;
+      state = typeof newState === 'function' ? (newState as TEditState<T>)(state) : newState;
       status = newStatus;
       error = newError;
       _notify();
@@ -63,5 +70,7 @@ export const createItem = <T>(initial?: T): ICreateItem<T> => {
       sub(_getItem());
       return subscribers.push(sub);
     },
+    getAbortController: () => abortController,
+    setAbortController: newController => (abortController = newController),
   };
 };

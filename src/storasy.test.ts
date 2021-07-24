@@ -1,5 +1,5 @@
 import { createStorasyClient } from './create-storasy-client';
-import { put } from './utils';
+import { call, put, go } from './utils';
 
 type TTest = {
   test: string;
@@ -7,8 +7,12 @@ type TTest = {
 
 const INITIAL_ONE = { test: 'test' };
 
+const fake_req = () => Promise.resolve(INITIAL_ONE);
+
 function* testGenerator() {
-  yield put('kek');
+  yield go('loading');
+  const result: TTest = yield call(fake_req, { isControl: true });
+  yield put<TTest>(result);
 }
 
 describe('client test', () => {
@@ -29,7 +33,10 @@ describe('client test', () => {
 
     const storasyClient = createStorasyClient();
 
+    storasyClient.create('test', INITIAL_ONE);
     storasyClient.subscribe<TTest>('test', item => (state = item.state));
     storasyClient.run('test', testGenerator);
+
+    expect(state).toBe(INITIAL_ONE);
   });
 });
