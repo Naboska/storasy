@@ -1,7 +1,7 @@
-import { isPromise } from './utils';
+import { isPromise } from './helpers';
+import { ABORT_CONTROLLER_MESSAGE } from './constants';
 import type { ICreateItem } from './create-item';
 import type { TStorasyClient, TAbortController } from './create-storasy-client';
-import { ABORT_CONTROLLER_MESSAGE } from './constants';
 
 type TCreateAsync<AbortController> = Pick<TStorasyClient<AbortController>, 'abortController'> & {
   getStore: <T>() => Map<string, ICreateItem<T, AbortController>>;

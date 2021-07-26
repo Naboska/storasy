@@ -33,7 +33,7 @@ describe('client test', () => {
 
     const storasyClient = createStorasyClient();
 
-    storasyClient.create('test', INITIAL_ONE);
+    storasyClient.create('test');
     storasyClient.subscribe<TTest>('test', item => (state = item.state));
     storasyClient.run('test', testGenerator);
 

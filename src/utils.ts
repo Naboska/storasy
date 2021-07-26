@@ -1,24 +1,5 @@
-import { TAsyncEvents, TStoreItem } from './types';
-import { storasy } from './storasy';
-import { ICreateItem, TEditState, TItem, TItemStatus } from './create-item';
-import { TAbortController } from './create-storasy-client';
-
-export const isPromise = (promise: any): boolean => promise && Promise.resolve(promise) === promise;
-
-export const initStoreOptions = ({ asyncEvents }: { asyncEvents: TAsyncEvents }) => {
-  storasy.setAsyncEvents(asyncEvents);
-};
-
-export const getInitialItem = (): TStoreItem => ({
-  state: {
-    data: undefined,
-    isLoading: false,
-    isError: false,
-    isLoaded: false,
-    error: undefined,
-  },
-  subscribers: [],
-});
+import type { ICreateItem, TEditState, TItemStatus } from './create-item';
+import type { TAbortController } from './create-storasy-client';
 
 type TCall = {
   isControl?: boolean;
