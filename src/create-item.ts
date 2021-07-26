@@ -7,13 +7,13 @@ import type {
   TStorasyItemEditState,
 } from './types';
 
-export const createItem = <ItemState, AbortController>(
+export const createItem = <ItemState, GAbortController = AbortController>(
   initial?: ItemState
-): IStorasyItem<ItemState, AbortController> => {
+): IStorasyItem<ItemState, GAbortController> => {
   let state = initial;
   let status: TStorasyItemStatus = 'stale';
   let error: string = undefined;
-  let abortController: AbortController;
+  let abortController: GAbortController;
 
   const subscribers = createEvents<(state: TStorasyItem<ItemState>) => void>();
 
@@ -35,23 +35,31 @@ export const createItem = <ItemState, AbortController>(
       : (newState as ItemState);
 
   return {
+    getItem: _getItem,
     getState: () => state,
     putState(newState) {
       state = _getNewState(newState);
       _notify();
+
+      return state;
     },
     putStatus(newStatus) {
       status = newStatus;
       _notify();
+
+      return status;
     },
     putItem(newState, newStatus, newError) {
       state = _getNewState(newState);
       status = newStatus;
       error = newError;
       _notify();
+
+      return _getItem();
     },
     subscribe(sub) {
       sub(_getItem());
+
       return subscribers.push(sub);
     },
     getAbortController: () => abortController,

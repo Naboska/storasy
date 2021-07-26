@@ -7,6 +7,7 @@ describe('helpers test', () => {
   test('should check promise, true', () => {
     expect(isPromise(promise)).toBe(true);
   });
+
   test('should check promise, false', () => {
     expect(isPromise(fn)).toBeFalsy();
     expect(isPromise('text')).toBeFalsy();
@@ -15,9 +16,11 @@ describe('helpers test', () => {
     expect(isPromise(null)).toBeFalsy();
     expect(isPromise(undefined)).toBeFalsy();
   });
+
   test('should check function, true', () => {
     expect(isFn(fn)).toBe(true);
   });
+
   test('should check function, false', () => {
     expect(isFn(promise)).toBeFalsy();
     expect(isFn('text')).toBeFalsy();
