@@ -8,21 +8,21 @@ import type {
 } from './types';
 import { TStorasyRunOptions } from './types';
 
-export const createStorasyClient = <GAbortController = AbortController>({
+export const createStorasyClient = <AbortController = unknown>({
   abortController,
-}: TStorasyClient<GAbortController> = {}) => {
-  const instance: Map<string, IStorasyItem<unknown, GAbortController>> = new Map();
+}: TStorasyClient<AbortController> = {}) => {
+  const instance: Map<string, IStorasyItem<unknown, AbortController>> = new Map();
 
   const _getStore = <ItemState>() =>
-    instance as Map<string, IStorasyItem<ItemState, GAbortController>>;
+    instance as Map<string, IStorasyItem<ItemState, AbortController>>;
 
-  const async = createAsync<GAbortController>({ abortController, getStore: _getStore });
+  const async = createAsync<AbortController>({ abortController, getStore: _getStore });
 
   const _getItem = <ItemState>(key: string, initial?: ItemState) => {
     const store = _getStore<ItemState>();
     const include = store.has(key);
 
-    if (!include) store.set(key, createItem<ItemState, GAbortController>(initial));
+    if (!include) store.set(key, createItem<ItemState, AbortController>(initial));
 
     return store.get(key);
   };

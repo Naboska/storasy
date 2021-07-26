@@ -26,7 +26,7 @@ export const go = <ItemState>(status: Exclude<TStorasyItemStatus, 'stale'>) => (
 export const call = <ItemState, Params>(
   promise: (params: TStorasyFetcher<Params>) => Promise<ItemState>,
   options?: TCall<Params>
-) => (item: IStorasyItem<ItemState>, controller: TAbortController<AbortController>) => {
+) => (item: IStorasyItem<ItemState>, controller: TAbortController<unknown>) => {
   const ac = item.getAbortController();
 
   if (ac) controller.abort(ac);

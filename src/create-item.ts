@@ -7,13 +7,13 @@ import type {
   TStorasyItemEditState,
 } from './types';
 
-export const createItem = <ItemState, GAbortController = AbortController>(
+export const createItem = <ItemState, AbortController = unknown>(
   initial?: ItemState
-): IStorasyItem<ItemState, GAbortController> => {
+): IStorasyItem<ItemState, AbortController> => {
   let state = initial;
   let status: TStorasyItemStatus = 'stale';
-  let error: string = undefined;
-  let abortController: GAbortController;
+  let error: string;
+  let abortController: AbortController;
 
   const subscribers = createEvents<(state: TStorasyItem<ItemState>) => void>();
 

@@ -1,6 +1,6 @@
 import { createStorasyClient } from './create-storasy-client';
 import { call, put, go } from './utils';
-import { TStorasyFetcher } from './types';
+import { TAbortController, TStorasyFetcher } from './types';
 
 type TTest = {
   test: string;
@@ -22,9 +22,17 @@ function* uncontrolledGenerator<Params>(params?: Params) {
 }
 
 const setup = (key?: string) => {
-  let state: TTest | null = null;
+  const abortControllerInstance = jest.fn();
 
-  const storasyClient = createStorasyClient();
+  const abortController: TAbortController<unknown> = {
+    createAbortController: () => abortControllerInstance,
+    abort: (controller: any) => controller('abort'),
+    getSignal: (controller: any) => controller('signal'),
+  };
+
+  const storasyClient = createStorasyClient({ abortController });
+
+  let state: TTest | null = null;
 
   if (key) {
     storasyClient.create(key);

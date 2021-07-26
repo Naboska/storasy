@@ -36,7 +36,7 @@ export type TStorasyItemEditState<ItemState> = (
   oldState?: ItemState | undefined
 ) => ItemState | undefined;
 
-export interface IStorasyItem<ItemState, GAbortController = AbortController> {
+export interface IStorasyItem<ItemState, AbortController = unknown> {
   getItem: () => TStorasyItem<ItemState>;
   getState: () => ItemState;
   putState: (newState?: ItemState | TStorasyItemEditState<ItemState>) => ItemState | undefined;
@@ -47,6 +47,6 @@ export interface IStorasyItem<ItemState, GAbortController = AbortController> {
     newError?: string
   ) => TStorasyItem<ItemState>;
   subscribe: (sub: TStorasyItemSubscribe<ItemState>) => () => void;
-  getAbortController: () => GAbortController | undefined;
-  setAbortController: (newController: GAbortController) => GAbortController;
+  getAbortController: () => AbortController | undefined;
+  setAbortController: (newController: AbortController) => AbortController;
 }
