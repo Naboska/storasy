@@ -1,31 +1,32 @@
-import type { ICreateItem, TEditState, TItemStatus } from './create-item';
-import type { TAbortController } from './create-storasy-client';
+import type {
+  TAbortController,
+  IStorasyItem,
+  TStorasyItemEditState,
+  TStorasyItemStatus,
+  TStorasyFetcher,
+} from './types';
 
-type TCall = {
+type TCall<Params> = {
   isControl?: boolean;
-  opt?: any;
+  params?: Params;
 };
 
-type TCallPromise = {
-  opt: any;
-  signal: any;
-};
+export const select = <ItemState>() => (item: IStorasyItem<ItemState>) => item.getState();
 
-export const select = <T>() => (item: ICreateItem<T>) => item.getState();
-
-export const put = <T>(
-  data: T | TEditState<T>,
-  status?: Exclude<TItemStatus, 'stale'>,
+export const put = <ItemState>(
+  data: ItemState | TStorasyItemEditState<ItemState>,
+  status?: Exclude<TStorasyItemStatus, 'stale'>,
   error?: string
-) => (item: ICreateItem<T>) => item.putItem(data, status ?? 'loaded', error);
+) => (item: IStorasyItem<ItemState>) => item.putItem(data, status ?? 'loaded', error);
 
-export const go = <T>(status: Exclude<TItemStatus, 'stale'>) => (item: ICreateItem<T>) =>
-  item.putStatus(status);
+export const go = <ItemState>(status: Exclude<TStorasyItemStatus, 'stale'>) => (
+  item: IStorasyItem<ItemState>
+) => item.putStatus(status);
 
-export const call = <T>(promise: (opt: TCallPromise) => Promise<any>, options?: TCall) => (
-  item: ICreateItem<T>,
-  controller: TAbortController<AbortController>
-) => {
+export const call = <ItemState, Params>(
+  promise: (params: TStorasyFetcher<Params>) => Promise<ItemState>,
+  options?: TCall<Params>
+) => (item: IStorasyItem<ItemState>, controller: TAbortController<AbortController>) => {
   const ac = item.getAbortController();
 
   if (ac) controller.abort(ac);
@@ -34,7 +35,7 @@ export const call = <T>(promise: (opt: TCallPromise) => Promise<any>, options?: 
 
   if (!options?.isControl) item.putItem(item.getState(), 'loading', undefined);
 
-  return promise({ signal: controller.getSignal(newAc), opt: options?.opt }).then(result => {
+  return promise({ signal: controller.getSignal(newAc), params: options?.params }).then(result => {
     if (!options?.isControl) item.putItem(result, 'loaded');
     return result;
   });

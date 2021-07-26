@@ -1,42 +1,21 @@
 import { createEvents } from './create-events';
+import { isFn } from './helpers';
+import type {
+  TStorasyItemStatus,
+  TStorasyItem,
+  IStorasyItem,
+  TStorasyItemEditState,
+} from './types';
 
-export type TEditState<T> = (oldState: T | undefined) => T;
-
-export type TItemStatus = 'stale' | 'loading' | 'loaded';
-
-export type TItem<T> = {
-  state: T;
-  status: TItemStatus;
-  error?: string;
-  isLoaded: boolean;
-  isLoading: boolean;
-  isError: boolean;
-  isStale: boolean;
-};
-
-export type TItemSubscribe<T> = (item: TItem<T>) => void;
-
-export interface ICreateItem<T, GAbortController = AbortController> {
-  getState: () => T;
-  putState: (newState: T | TEditState<T>) => void;
-  putStatus: (newStatus: Exclude<TItemStatus, 'stale'>) => void;
-  putItem: (
-    newState: T | TEditState<T>,
-    newStatus: Exclude<TItemStatus, 'stale'>,
-    newError?: string
-  ) => void;
-  subscribe: (sub: TItemSubscribe<T>) => () => void;
-  getAbortController: () => GAbortController | undefined;
-  setAbortController: (newController: GAbortController) => GAbortController;
-}
-
-export const createItem = <T, AbortController>(initial?: T): ICreateItem<T, AbortController> => {
+export const createItem = <ItemState, AbortController>(
+  initial?: ItemState
+): IStorasyItem<ItemState, AbortController> => {
   let state = initial;
-  let status: TItemStatus = 'stale';
+  let status: TStorasyItemStatus = 'stale';
   let error: string = undefined;
   let abortController: AbortController;
 
-  const subscribers = createEvents<(state: TItem<T>) => void>();
+  const subscribers = createEvents<(state: TStorasyItem<ItemState>) => void>();
 
   const _notify = () => subscribers.call(_getItem());
 
@@ -50,10 +29,15 @@ export const createItem = <T, AbortController>(initial?: T): ICreateItem<T, Abor
     isStale: status === 'stale',
   });
 
+  const _getNewState = (newState: TStorasyItemEditState<ItemState> | ItemState): ItemState =>
+    isFn(newState)
+      ? (newState as TStorasyItemEditState<ItemState>)(state)
+      : (newState as ItemState);
+
   return {
     getState: () => state,
     putState(newState) {
-      state = typeof newState === 'function' ? (newState as TEditState<T>)(state) : newState;
+      state = _getNewState(newState);
       _notify();
     },
     putStatus(newStatus) {
@@ -61,7 +45,7 @@ export const createItem = <T, AbortController>(initial?: T): ICreateItem<T, Abor
       _notify();
     },
     putItem(newState, newStatus, newError) {
-      state = typeof newState === 'function' ? (newState as TEditState<T>)(state) : newState;
+      state = _getNewState(newState);
       status = newStatus;
       error = newError;
       _notify();
