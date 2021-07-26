@@ -6,9 +6,9 @@ module.exports = {
   mode: 'production',
   entry: getPath('src', 'index.ts'),
   output: {
-    libraryTarget: 'system',
+    libraryTarget: 'umd',
     filename: 'storasy.production.js',
-    path: getPath('dist', 'system'),
+    path: getPath('dist', 'umd'),
   },
   resolve: {
     extensions: ['.js', '.ts'],

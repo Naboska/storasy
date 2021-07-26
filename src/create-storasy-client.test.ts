@@ -21,15 +21,18 @@ function* uncontrolledGenerator<Params>(params?: Params) {
   yield call(fake_req, { params });
 }
 
-const setup = (key: string) => {
+const setup = (key?: string) => {
   let state: TTest | null = null;
 
   const storasyClient = createStorasyClient();
-  storasyClient.create(key);
-  expect(state).toBe(null);
 
-  storasyClient.subscribe<TTest>(key, item => (state = item.state));
-  expect(state).toBe(undefined);
+  if (key) {
+    storasyClient.create(key);
+    expect(state).toBeNull();
+
+    storasyClient.subscribe<TTest>(key, item => (state = item.state));
+    expect(state).toBeUndefined();
+  }
 
   return {
     getState: () => state,
@@ -43,7 +46,7 @@ describe('client test', () => {
     const { storasyClient } = setup(KEY);
 
     const isInclude = storasyClient.instance.has(KEY);
-    expect(isInclude).toBe(true);
+    expect(isInclude).toBeTruthy();
   });
 
   test('should item change from put', () => {
@@ -52,6 +55,13 @@ describe('client test', () => {
 
     storasyClient.put<TTest>('test', INITIAL_ONE);
     expect(getState()).toBe(INITIAL_ONE);
+  });
+
+  test('should not give an error if we change a non-existent key', () => {
+    const { storasyClient, getState } = setup();
+
+    storasyClient.put('_', INITIAL_ONE);
+    expect(getState()).toBeNull();
   });
 
   test('should item change from controlled generator', async () => {
@@ -81,5 +91,24 @@ describe('client test', () => {
     storasyClient.run(KEY, uncontrolledGenerator, { params: checkValue });
     await new Promise(resolve => setTimeout(resolve));
     expect(getState()).toBe(checkValue);
+  });
+
+  test('should start with a belated function with custom params', async () => {
+    const KEY = '_';
+    const { storasyClient, getState } = setup(KEY);
+
+    const checkValue = { [KEY]: KEY };
+    const checkValue2 = { [KEY]: KEY + KEY };
+
+    const { refetch } = storasyClient.run(KEY, uncontrolledGenerator, {
+      enabled: false,
+      params: checkValue,
+    });
+    await new Promise(resolve => setTimeout(resolve));
+    expect(getState()).toBeUndefined();
+
+    refetch(checkValue2);
+    await new Promise(resolve => setTimeout(resolve));
+    expect(getState()).toBe(checkValue2);
   });
 });
