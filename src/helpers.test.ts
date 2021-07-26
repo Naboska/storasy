@@ -8,22 +8,22 @@ describe('helpers test', () => {
     expect(isPromise(promise)).toBe(true);
   });
   test('should check promise, false', () => {
-    expect(isPromise(fn)).toBe(false);
-    expect(isPromise('text')).toBe(false);
-    expect(isPromise(1)).toBe(false);
-    expect(isPromise(NaN)).toBe(false);
-    expect(isPromise(null)).toBe(false);
-    expect(isPromise(undefined)).toBe(false);
+    expect(isPromise(fn)).toBeFalsy();
+    expect(isPromise('text')).toBeFalsy();
+    expect(isPromise(1)).toBeFalsy();
+    expect(isPromise(NaN)).toBeFalsy();
+    expect(isPromise(null)).toBeFalsy();
+    expect(isPromise(undefined)).toBeFalsy();
   });
   test('should check function, true', () => {
     expect(isFn(fn)).toBe(true);
   });
   test('should check function, false', () => {
-    expect(isFn(promise)).toBe(false);
-    expect(isFn('text')).toBe(false);
-    expect(isFn(1)).toBe(false);
-    expect(isFn(NaN)).toBe(false);
-    expect(isFn(null)).toBe(false);
-    expect(isFn(undefined)).toBe(false);
+    expect(isFn(promise)).toBeFalsy();
+    expect(isFn('text')).toBeFalsy();
+    expect(isFn(1)).toBeFalsy();
+    expect(isFn(NaN)).toBeFalsy();
+    expect(isFn(null)).toBeFalsy();
+    expect(isFn(undefined)).toBeFalsy();
   });
 });
