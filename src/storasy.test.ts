@@ -22,11 +22,11 @@ function* uncontrolledGenerator() {
 describe('client test', () => {
   test('should item create', () => {
     let state: TTest | null = null;
-    const storasyClient = createStorasyClient();
 
+    const storasyClient = createStorasyClient();
+    storasyClient.create<TTest>('test', INITIAL_ONE);
     expect(state).toBe(null);
 
-    storasyClient.create<TTest>('test', INITIAL_ONE);
     storasyClient.subscribe<TTest>('test', item => (state = item.state));
 
     expect(state).toBe(INITIAL_ONE);
@@ -48,19 +48,14 @@ describe('client test', () => {
     let state: TTest | null = null;
 
     const storasyClient = createStorasyClient();
-
+    storasyClient.create('controlledTest');
     expect(state).toBe(null);
 
-    storasyClient.create('controlledTest');
-
     storasyClient.subscribe<TTest>('controlledTest', item => (state = item.state));
-
     expect(state).toBe(undefined);
 
     storasyClient.run('controlledTest', controlledGenerator);
-
     await new Promise(resolve => setTimeout(resolve));
-
     expect(state).toBe(INITIAL_ONE);
   });
 
