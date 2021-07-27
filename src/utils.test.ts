@@ -9,6 +9,7 @@ const setup = <T = any>() => {
     createAbortController: () => abortControllerInstance,
     abort: (controller: any) => controller('abort'),
     getSignal: (controller: any) => controller('signal'),
+    checkOnError: () => true,
   };
 
   const storasyItem = createItem<T>();

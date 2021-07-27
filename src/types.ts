@@ -2,6 +2,7 @@ export type TAbortController<AbortController> = {
   createAbortController: () => AbortController;
   getSignal: (controller: AbortController) => any;
   abort: (controller: AbortController) => any;
+  checkOnError: (error: Error) => boolean;
 };
 
 export type TStorasyClient<AbortController> = {
