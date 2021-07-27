@@ -1,5 +1,5 @@
 import { createItem } from './create-item';
-import { createAsync } from './create-async';
+import { createWorker } from './create-worker';
 import type {
   TStorasyClient,
   IStorasyItem,
@@ -16,7 +16,7 @@ export const createStorasyClient = <AbortController = unknown>({
   const _getStore = <ItemState>() =>
     instance as Map<string, IStorasyItem<ItemState, AbortController>>;
 
-  const async = createAsync<AbortController>({ abortController, getStore: _getStore });
+  const worker = createWorker<AbortController>({ abortController, getStore: _getStore });
 
   const _getItem = <ItemState>(key: string, initial?: ItemState) => {
     const store = _getStore<ItemState>();
@@ -46,7 +46,7 @@ export const createStorasyClient = <AbortController = unknown>({
       const { enabled = true, params } = options;
 
       const runGenerator = (newParams?: Params) =>
-        async.runner<ItemState>(key, generator(newParams ?? params));
+        worker<ItemState>(key, generator(newParams ?? params));
 
       if (enabled) runGenerator();
 

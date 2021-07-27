@@ -2,23 +2,23 @@ import { isPromise } from './helpers';
 import { ABORT_CONTROLLER_MESSAGE } from './constants';
 import type { TStorasyClient, TAbortController, IStorasyItem } from './types';
 
-type TCreateAsync<AbortController> = Pick<TStorasyClient<AbortController>, 'abortController'> & {
+type TCreateWorker<AbortController> = Pick<TStorasyClient<AbortController>, 'abortController'> & {
   getStore: <T>() => Map<string, IStorasyItem<T, AbortController>>;
 };
 
 type TError = Error & { status: string };
 
-const getInitialAc = (): TAbortController<AbortController> => ({
+export const getAbortControllerInstance = (): TAbortController<AbortController> => ({
   createAbortController: () => new AbortController(),
   getSignal: controller => controller.signal,
   abort: controller => controller.abort(),
 });
 
-export const createAsync = <AbortController>({
+export const createWorker = <AbortController>({
   getStore,
   abortController,
-}: TCreateAsync<AbortController>) => {
-  const ac = abortController ?? getInitialAc();
+}: TCreateWorker<AbortController>) => {
+  const ac = abortController ?? getAbortControllerInstance();
 
   const _createGeneratorError = (key: string, generator: Generator<any>, error: TError) => {
     const item = getStore<unknown>().get(key);
@@ -56,7 +56,5 @@ export const createAsync = <AbortController>({
     return 'final';
   };
 
-  return {
-    runner: _runner,
-  };
+  return _runner;
 };

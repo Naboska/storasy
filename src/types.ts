@@ -13,7 +13,7 @@ export type TStorasyRunOptions<Params> = {
   params?: Params;
 };
 
-export type TStorasyFetcher<Params, Signal = AbortSignal> = {
+export type TStorasyFetcher<Params = unknown, Signal = AbortSignal> = {
   params: Params;
   signal: Signal;
 };
