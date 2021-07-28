@@ -34,18 +34,20 @@ const setup = (key?: string) => {
   const storasyClient = createStorasyClient({ abortController });
 
   let state: TTest | null = null;
+  let unsubscribe;
 
   if (key) {
     storasyClient.create(key);
     expect(state).toBeNull();
 
-    storasyClient.subscribe<TTest>(key, item => (state = item.state));
+    unsubscribe = storasyClient.subscribe<TTest>(key, item => (state = item.state));
     expect(state).toBeUndefined();
   }
 
   return {
     getState: () => state,
     storasyClient,
+    unsubscribe,
   };
 };
 
@@ -56,6 +58,24 @@ describe('client test', () => {
 
     const isInclude = storasyClient.instance.has(KEY);
     expect(isInclude).toBeTruthy();
+  });
+
+  test('should dont delete item if include subscriber', () => {
+    const KEY = 'test';
+    const { storasyClient } = setup(KEY);
+
+    expect(storasyClient.delete(KEY)).toBeFalsy();
+  });
+
+  test('should delete item', () => {
+    const KEY = 'test';
+    const withKey = setup(KEY);
+    const withoutKey = setup();
+
+    withKey.unsubscribe();
+
+    expect(withKey.storasyClient.delete(KEY)).toBeTruthy();
+    expect(withoutKey.storasyClient.delete(KEY)).toBeTruthy();
   });
 
   test('should item change from put', () => {

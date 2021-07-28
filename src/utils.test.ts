@@ -25,7 +25,7 @@ const setup = <T = any>() => {
 describe('utils test', () => {
   test('should item selected', () => {
     const initialCount = 1;
-    const storasyItem = createItem<number>(initialCount);
+    const storasyItem = createItem<number>({ initial: initialCount });
     const selectCountFromItem = select<number>();
     const count = selectCountFromItem(storasyItem);
 
@@ -44,7 +44,7 @@ describe('utils test', () => {
       isLoading: false,
     };
 
-    const storasyItem = createItem<number>(1);
+    const storasyItem = createItem<number>({ initial: 1 });
     const putCountInItem = put<number>(curr => curr + 1, 'loaded', 'errorText');
     const itemAfterChange = putCountInItem(storasyItem);
 

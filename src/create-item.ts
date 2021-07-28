@@ -7,10 +7,14 @@ import type {
   TStorasyItemEditState,
 } from './types';
 
+type TStorasyItemOptions<ItemState> = {
+  initial?: ItemState;
+};
+
 export const createItem = <ItemState, AbortController = unknown>(
-  initial?: ItemState
+  options?: TStorasyItemOptions<ItemState>
 ): IStorasyItem<ItemState, AbortController> => {
-  let state = initial;
+  let state = options?.initial;
   let status: TStorasyItemStatus = 'stale';
   let error: string;
   let abortController: AbortController;
@@ -35,6 +39,9 @@ export const createItem = <ItemState, AbortController = unknown>(
       : (newState as ItemState);
 
   return {
+    get subscribersLength() {
+      return subscribers.length;
+    },
     getItem: _getItem,
     getState: () => state,
     putState(newState) {

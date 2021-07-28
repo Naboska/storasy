@@ -38,6 +38,7 @@ export type TStorasyItemEditState<ItemState> = (
 ) => ItemState | undefined;
 
 export interface IStorasyItem<ItemState, AbortController = unknown> {
+  subscribersLength: number;
   getItem: () => TStorasyItem<ItemState>;
   getState: () => ItemState;
   putState: (newState?: ItemState | TStorasyItemEditState<ItemState>) => ItemState | undefined;

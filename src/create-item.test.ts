@@ -13,21 +13,32 @@ describe('item test', () => {
       isLoading: false,
     };
 
-    const storasyItem = createItem(null);
+    const storasyItem = createItem({ initial: null });
 
     expect(storasyItem.getItem()).toStrictEqual(item);
   });
 
+  test('should get correct subscribers length', () => {
+    const item = createItem();
+    expect(item.subscribersLength).toBe(0);
+
+    const unsubscribe = item.subscribe(() => {});
+    expect(item.subscribersLength).toBe(1);
+
+    unsubscribe();
+    expect(item.subscribersLength).toBe(0);
+  });
+
   test('should created item with initial state', () => {
     const count = 1;
-    const item = createItem(count);
+    const item = createItem({ initial: count });
 
     expect(item.getState()).toBe(count);
   });
 
   test('should change state', () => {
     const count = 1;
-    const item = createItem(count);
+    const item = createItem({ initial: count });
 
     item.putState(count + 1);
     expect(item.getState()).toBe(2);
@@ -55,7 +66,7 @@ describe('item test', () => {
       isLoading: false,
     };
 
-    const storasyItem = createItem<number>(0);
+    const storasyItem = createItem<number>({ initial: 0 });
 
     const newItem = storasyItem.putItem(oldState => oldState + 1, 'loaded', 'errorText');
 
@@ -64,7 +75,7 @@ describe('item test', () => {
 
   test('should subscriber get state after subscribe', () => {
     let localState;
-    const storasyItem = createItem<number>(Math.PI);
+    const storasyItem = createItem<number>({ initial: Math.PI });
 
     storasyItem.subscribe(item => (localState = item.state));
 

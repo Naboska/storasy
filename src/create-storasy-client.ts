@@ -22,7 +22,11 @@ export const createStorasyClient = <AbortController = unknown>({
     const store = _getStore<ItemState>();
     const include = store.has(key);
 
-    if (!include) store.set(key, createItem<ItemState, AbortController>(initial));
+    if (!include)
+      store.set(
+        key,
+        createItem<ItemState, AbortController>({ initial })
+      );
 
     return store.get(key);
   };
@@ -37,6 +41,18 @@ export const createStorasyClient = <AbortController = unknown>({
       const include = store.has(key);
 
       if (include) store.get(key).putState(data);
+    },
+    delete(key: string) {
+      if (!instance.has(key)) return true;
+
+      const item = instance.get(key);
+
+      if (!item.subscribersLength) {
+        instance.delete(key);
+        return true;
+      }
+
+      return false;
     },
     run<ItemState, Params = any>(
       key: string,
