@@ -1,6 +1,6 @@
 {
   "name": "@storasy/core",
-  "version": "0.0.11",
+  "version": "0.1.0",
   "license": "MIT",
   "author": {
     "name": "Dmitry Filatov",
@@ -28,9 +28,9 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "build-module": "tsc",
-    "build-browser": "NODE_ENV=production webpack",
-    "build": "yarn clear && yarn build-module && yarn build-browser",
+    "build-browser": "webpack",
     "clear": "rimraf dist",
+    "build": "yarn clear && yarn build-module && yarn build-browser",
     "test:watch": "jest --watchAll",
     "test:staged": "jest --coverage --bail",
     "lint": "eslint \"./**/*.ts\" --fix"
@@ -45,7 +45,6 @@
     "babel-loader": "^8.2.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "eslint": "^7.13.0",
-    "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.1.4",
