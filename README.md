@@ -58,17 +58,15 @@ npm install @storasy/core
 ```ts
   import { createStorasyClient } from './create-storasy-client';
 
-  //optional
-  const options = {
+  //options - optional
+  const storasyClient = createStorasyClient({
     abortController: {
       createAbortController: () => new AbortController(),
       getSignal: controller => controller.signal,
       abort: controller => controller.abort(),
       checkOnError: error => error.name === 'AbortError'
     }
-  };
-
-  const storasyClient = createStorasyClient(options);
+  });
 ```
 
 ##### Accept:
