@@ -64,18 +64,23 @@
     </div>
 </div>
 
-<script src="https://unpkg.com/systemjs/dist/system.js"></script>
-<script src="https://unpkg.com/systemjs/dist/extras/named-register.js"></script>
+<script src="https://unpkg.com/@storasy/core/dist/umd/storasy.production.js"></script>
 
 <script type="module">
-  async function main() {
-    window.storasy = await System.import('https://unpkg.com/@storasy/core/dist/system/storasy.production.js');
-    start();
-  }
+  const storasyClient = storasy.createStorasyClient();
 
-  function start() {
-    userDataView('userData');
-    getUserButtonModel('userData');
+  const fetcher = ({params, signal}) => {
+    const { page } = params;
+
+    return fetch(`https://reqres.in/api/users?page=${page}&per_page=2&delay=${page <= 1 ? 0 : 3}`, {
+      signal,
+    }).then(e => e.json())
+  };
+
+  function* getData(page) {
+    const params = { page };
+
+    yield storasy.call(fetcher, { params });
   }
 
   function userDataView(dataKey) {
@@ -84,7 +89,7 @@
     const prevButton = document.getElementById('prev-table-button');
     const nextButton = document.getElementById('next-table-button');
 
-    const setData = ({data: result, isLoading, isLoaded}) => {
+    const setData = ({ state: result, isLoading, isLoaded }) => {
       if ((!isLoaded || isLoading)) userTable.classList.add('load');
       else userTable.classList.remove('load')
 
@@ -98,33 +103,23 @@
       }
     }
 
-    storasy.subscribe(dataKey, setData)
+    storasyClient.subscribe(dataKey, setData)
   }
 
   function getUserButtonModel(dataKey) {
     const prevButton = document.getElementById('prev-table-button');
     const nextButton = document.getElementById('next-table-button');
-    let fetchPage = 0;
+    let page = 1;
 
-    const fetcher = async (page, token) => {
-      return await fetch(`https://reqres.in/api/users?page=${page}&per_page=2&delay=${page <= 1 ? 0 : 3}`, {
-        signal: token,
-      }).then(e => e.json())
-    };
+    const { refetch } = storasyClient.run(dataKey, getData, { params: page });
 
     const setPage = (isNext) => () => {
-      fetchPage = isNext ? fetchPage + 1 : fetchPage - 1;
-      storasy.runner(dataKey, getData());
-    }
-
-    function* getData() {
-      const response = yield storasy.call(dataKey, fetcher, fetchPage);
-      storasy.setItem(dataKey, () => response);
+      page = isNext ? page + 1 : page - 1;
+      refetch(page);
     }
 
     prevButton.addEventListener('click', setPage(false));
     nextButton.addEventListener('click', setPage(true));
-    setPage(true)();
   }
 
   function createRow(data) {
@@ -137,7 +132,8 @@
     return row;
   }
 
-  main();
+  userDataView('userData');
+  getUserButtonModel('userData');
 </script>
 </body>
 </html>
