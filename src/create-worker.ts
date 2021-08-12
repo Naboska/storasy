@@ -68,7 +68,7 @@ export const createWorker = <AbortController = unknown>({
       const item = getStore().get(key);
       const ac = item.getAbortController();
 
-      abort(ac);
+      if (ac) abort(ac);
     },
   };
 };
