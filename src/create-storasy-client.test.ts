@@ -60,6 +60,14 @@ describe('client test', () => {
     expect(isInclude).toBeTruthy();
   });
 
+  test('should item does not exist', () => {
+    const KEY = 'test';
+    const { storasyClient } = setup();
+
+    const item = storasyClient.get(KEY);
+    expect(item).toBeNull();
+  });
+
   test('should dont delete item if include subscriber', () => {
     const KEY = 'test';
     const { storasyClient } = setup(KEY);

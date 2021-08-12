@@ -14,9 +14,6 @@
 ![Storasy Header](https://github.com/Naboska/storasy/raw/main/media/logo.png)
 library for working with asynchronous data
 
-**status**: in development
-
-<br/>
 
 ## Quick Start
 
@@ -37,16 +34,16 @@ npm install @storasy/core
 #### Browser
 
 ```html
-    ...
-    <body>
-    ...
-    <script src="https://unpkg.com/@storasy/core/dist/umd/storasy.production.js"></script>
-    <script>
-      const storasy = window.storasy;
-      ...
-    </script>
-    ...
-    </body>
+...
+<body>
+...
+<script src="https://unpkg.com/@storasy/core/dist/umd/storasy.production.js"></script>
+<script>
+  const storasy = window.storasy;
+  ...
+</script>
+...
+</body>
 ```
 
 ### API
@@ -57,17 +54,17 @@ npm install @storasy/core
 #### StorasyClient
 
 ```ts
-  import { createStorasyClient } from './create-storasy-client';
+import { createStorasyClient } from './create-storasy-client';
 
-  //options - optional
-  const storasyClient = createStorasyClient({
-    abortController: {
-      createAbortController: () => new AbortController(),
-      getSignal: controller => controller.signal,
-      abort: controller => controller.abort(),
-      checkOnError: error => error.name === 'AbortError'
-    }
-  });
+//options - optional
+const storasyClient = createStorasyClient({
+  abortController: {
+    createAbortController: () => new AbortController(),
+    getSignal: controller => controller.signal,
+    abort: controller => controller.abort(),
+    checkOnError: error => error.name === 'AbortError'
+  }
+});
 ```
 
 ##### Accept:
@@ -93,7 +90,7 @@ const abortController = {
 Getter for storasy item
 
 ```ts
-  const item = storasyClient.get('key');
+const item = storasyClient.get('key');
 ```
 
 ###### - create
@@ -101,8 +98,8 @@ Getter for storasy item
 Creation storasy item.
 
 ```ts
-  //initialState - optional
-  storasyClient.create('key', initialState = 1)
+//initialState - optional
+storasyClient.create('key', initialState = 1)
 ```
 
 ###### - include
@@ -110,7 +107,7 @@ Creation storasy item.
 Checking for the presence of an item in the store.
 
 ```ts
-  storasyClient.include('key')
+storasyClient.include('key')
 ```
 
 ###### - put
@@ -118,11 +115,11 @@ Checking for the presence of an item in the store.
 Changing an existing item in the store.
 
 ```ts
-  storasyClient.put('key', 'newState');
+storasyClient.put('key', 'newState');
 
-  // or with callback
+// or with callback
 
-  storasyClient.put('key', oldState => 'newState');
+storasyClient.put('key', oldState => 'newState');
 ```
 
 ###### - delete
@@ -130,9 +127,9 @@ Changing an existing item in the store.
 Secure deletion of an item if there are no subscribers. Return a Boolean value.
 
 ```ts
-  const isDelete = storasyClient.delete('key');
-  
-  console.log(isDelete);
+const isDelete = storasyClient.delete('key');
+
+console.log(isDelete);
 ```
 
 ###### - run
@@ -140,15 +137,15 @@ Secure deletion of an item if there are no subscribers. Return a Boolean value.
 Starting the generator within the storasy item
 
 ```ts
-  function* generator(params) {}
+function* generator(params) {}
 
-  const { refetch } = storasyClient.run('key', generator, {
+const { refetch } = storasyClient.run('key', generator, {
     enabled: true, // If true, the generator will start immediately 
     params // Parameters that will get into the generator
-  });
+});
 
-  // newParams - optional. Otherwise, the old ones get caught
-  refetch(newParams)
+// newParams - optional. Otherwise, the old ones get caught
+refetch(newParams)
 ```
 
 ###### - subscribe
@@ -156,18 +153,111 @@ Starting the generator within the storasy item
 Subscription to change the state of the item
 
 ```ts
-  const state = null;
-  
-  const unsubscribe = storasyClient.subscribe('key', item => state = item.state);
+const state = null;
+
+const unsubscribe = storasyClient.subscribe('key', item => state = item.state);
 ```
 
 #### StorasyItem
 
 ```ts
-  import { storasyClient } from '';
-
-  const item = storasyClient.get('key');
+const item = storasyClient.get('key');
 ```
+
+###### - subscribersLength
+
+Get the number of subscribers from the item
+
+```ts
+const subsLength = storasyClient.get('key').subscribersLength;
+```
+
+###### - getItem
+
+Getter for state of the item
+
+```ts
+const item = storasyClient.get('key').getItem();
+
+type TStorasyItem<T> = {
+  state?: T;
+  status: TStorasyItemStatus;
+  error?: string;
+  isLoaded: boolean;
+  isLoading: boolean;
+  isError: boolean;
+  isStale: boolean;
+};
+```
+
+###### - getState
+
+Getter for item data
+
+```ts
+const data = storasyClient.get('key').getState();
+```
+
+###### - putState
+
+Setter for item data
+
+```ts
+const item = storasyClient.get('key');
+
+item.put('newData');
+
+// or with callback
+
+item.put(oldData => 'newData');
+```
+
+###### - putStatus
+
+Set new item status
+
+```ts
+const item = storasyClient.get('key');
+const newStatus = 'loading' | 'loaded';
+
+item.putStatus(newStatus);
+```
+
+###### - putItem
+
+Setter for item
+
+```ts
+const item = storasyClient.get('key');
+
+item.putStatus(
+    newState, //  newState | (oldState) => newState
+    newStatus, // 'loading' | 'loaded'
+    error, // string | undefined
+);
+```
+
+###### - subscribe
+
+Subscribe to item change
+
+```ts
+const item = storasyClient.get('key');
+const state = null;
+
+const unsubscribe = item.subscribe(itemState => state = itemState.state);
+```
+
+###### - getAbortController
+
+Get the controller to cancel the request
+
+```ts
+const item = storasyClient.get('key');
+
+const ac = item.getAbortController();
+```
+
 
 ## Examples
 
