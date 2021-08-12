@@ -124,11 +124,13 @@
 
   function createRow(data) {
     const row = document.createElement('tr');
-    data.forEach(item => {
+
+    for (let item of data) {
       const cell = document.createElement('td');
       cell.innerText = item;
       row.appendChild(cell)
-    })
+    }
+
     return row;
   }
 
