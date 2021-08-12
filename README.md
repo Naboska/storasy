@@ -139,7 +139,7 @@ Starting the generator within the storasy item
 ```ts
 function* generator(params) {}
 
-const { refetch } = storasyClient.run('key', generator, {
+const { refetch, cancel } = storasyClient.run('key', generator, {
     enabled: true, // If true, the generator will start immediately 
     params // Parameters that will get into the generator
 });

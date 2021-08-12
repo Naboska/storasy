@@ -61,5 +61,14 @@ export const createWorker = <AbortController = unknown>({
     return 'final';
   };
 
-  return _runner;
+  return {
+    run: _runner,
+    cancel(key: string) {
+      const { abort } = abortControllerInstance as TAbortController<AbortController>;
+      const item = getStore().get(key);
+      const ac = item.getAbortController();
+
+      abort(ac);
+    },
+  };
 };

@@ -59,11 +59,14 @@ export const createStorasyClient = <AbortController = unknown>({
       const { enabled = true, params } = options ?? {};
 
       const runGenerator = (newParams?: Params) =>
-        worker<ItemState>(key, generator(newParams ?? params));
+        worker.run<ItemState>(key, generator(newParams ?? params));
 
       if (enabled) runGenerator();
 
-      return { refetch: runGenerator };
+      return {
+        refetch: runGenerator,
+        cancel: () => worker.cancel(key),
+      };
     },
     subscribe<ItemState>(key, subscriber) {
       const include = instance.has(key);

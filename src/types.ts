@@ -10,6 +10,7 @@ export type TStorasyClientOptions<AbortController> = {
 };
 
 type TOnSubscribeCallback = () => void;
+type TOnCancelRequest = () => void;
 
 export type TStorasyClient = {
   get: <ItemState>(key: string) => IStorasyItem<ItemState> | null;
@@ -35,6 +36,7 @@ export type TStorasyRunOptions<Params> = {
 
 export type TStorasyRunner<Params = any> = {
   refetch: (params?: Params) => void;
+  cancel: TOnCancelRequest;
 };
 
 export type TStorasyFetcher<Params = unknown, Signal = AbortSignal> = {

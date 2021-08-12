@@ -48,6 +48,7 @@ const setup = (key?: string) => {
     getState: () => state,
     storasyClient,
     unsubscribe,
+    abortControllerInstance,
   };
 };
 
@@ -128,6 +129,18 @@ describe('client test', () => {
     storasyClient.run(KEY, uncontrolledGenerator, { params: checkValue });
     await new Promise(resolve => setTimeout(resolve));
     expect(getState()).toBe(checkValue);
+  });
+
+  test('should item generator cancel', async () => {
+    const KEY = 'test';
+    const { storasyClient, abortControllerInstance } = setup(KEY);
+
+    const { cancel } = storasyClient.run(KEY, controlledGenerator);
+    expect(abortControllerInstance.mock.calls[0][0]).toBe('signal');
+
+    cancel();
+
+    expect(abortControllerInstance.mock.calls[1][0]).toBe('abort');
   });
 
   test('should start with a belated function with custom params', async () => {

@@ -69,11 +69,25 @@ describe('test worker', () => {
     abortSpy.mockRestore();
   });
 
+  test('should work correctly default abort controller from worker', () => {
+    const abortSpy = jest.spyOn(AbortController.prototype, 'abort');
+    const { worker } = setup();
+    const KEY = 'test';
+
+    const workGenerator = createOneWork();
+    worker.run(KEY, workGenerator({ url: '/test' }, cancelableFetch));
+
+    worker.cancel(KEY);
+    expect(abortSpy).toBeCalledTimes(1);
+
+    abortSpy.mockRestore();
+  });
+
   test('should bad request set error', async () => {
     const { worker, getStore } = setup();
 
     const workGenerator = createOneWork();
-    worker('test', workGenerator({ url: '/test' }, badFetcher));
+    worker.run('test', workGenerator({ url: '/test' }, badFetcher));
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -88,7 +102,7 @@ describe('test worker', () => {
     const { worker, getStore } = setup();
 
     const workGenerator = createOneWork();
-    const refetch = () => worker('test', workGenerator({ url: '/test' }, cancelableFetch));
+    const refetch = () => worker.run('test', workGenerator({ url: '/test' }, cancelableFetch));
     refetch();
     refetch();
 
