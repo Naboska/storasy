@@ -18,7 +18,15 @@ export const createStorasyClient = <AbortController = unknown>({
 
   const worker = createWorker<AbortController>({ abortController, getStore: _getStore });
 
-  const _getItem = <ItemState>(key: string, initial?: ItemState) => {
+  const _getItem = <ItemState>(key: string) => {
+    const store = _getStore<ItemState>();
+
+    if (store.has(key)) return store.get(key);
+
+    return null;
+  };
+
+  const _createItem = <ItemState>(key: string, initial?: ItemState) => {
     const store = _getStore<ItemState>();
     const include = store.has(key);
 
@@ -32,10 +40,9 @@ export const createStorasyClient = <AbortController = unknown>({
   };
 
   return {
-    get instance() {
-      return instance;
-    },
-    create: _getItem,
+    get: _getItem,
+    create: _createItem,
+    include: (key: string) => instance.has(key),
     put<T>(key: string, data: T | TStorasyItemEditState<T>) {
       const store = _getStore<T>();
       const include = store.has(key);
@@ -68,8 +75,9 @@ export const createStorasyClient = <AbortController = unknown>({
 
       return { refetch: runGenerator };
     },
-    subscribe<T>(key: string, subscribe: TStorasyItemSubscribe<T>) {
-      const item = _getItem<T>(key);
+    subscribe<ItemState>(key: string, subscribe: TStorasyItemSubscribe<ItemState>) {
+      const include = instance.has(key);
+      const item = include ? _getItem<ItemState>(key) : _createItem<ItemState>(key);
 
       return item.subscribe(subscribe);
     },

@@ -56,7 +56,7 @@ describe('client test', () => {
     const KEY = 'test';
     const { storasyClient } = setup(KEY);
 
-    const isInclude = storasyClient.instance.has(KEY);
+    const isInclude = storasyClient.include(KEY);
     expect(isInclude).toBeTruthy();
   });
 

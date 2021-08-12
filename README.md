@@ -52,6 +52,7 @@ npm install @storasy/core
 ### API
 
 - [StorasyClient](#StorasyClient)
+- [StorasyItem](#StorasyItem)
 
 #### StorasyClient
 
@@ -87,29 +88,86 @@ const abortController = {
 
 ##### Return:
 
-###### - instance
+###### - get
 
-Getter for storasy instance, using setters `unsafe`. [API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map).
+Getter for storasy item
 
 ```ts
-  const storasyClient = createStorasyClient();
-
-  const item = storasyClient.instance.get('key');
+  const item = storasyClient.get('key');
 ```
 
 ###### - create
 
-Secure key creation.
+Creation storasy item.
 
 ```ts
-  const storasyClient = createStorasyClient();
-
+  //initialState - optional
   storasyClient.create('key', initialState = 1)
 ```
 
+###### - include
+
+Checking for the presence of an item in the store.
+
+```ts
+  storasyClient.include('key')
+```
+
+###### - put
+
+Changing an existing item in the store.
+
+```ts
+  storasyClient.put('key', 'newState');
+
+  // or with callback
+
+  storasyClient.put('key', oldState => 'newState');
+```
+
 ###### - delete
+
+Secure deletion of an item if there are no subscribers. Return a Boolean value.
+
+```ts
+  const isDelete = storasyClient.delete('key');
+  
+  console.log(isDelete);
+```
+
 ###### - run
+
+Starting the generator within the storasy item
+
+```ts
+  function* generator(params) {}
+
+  const { refetch } = storasyClient.run('key', generator, {
+    enabled: true, // If true, the generator will start immediately 
+    params // Parameters that will get into the generator
+  });
+
+  // newParams - optional. Otherwise, the old ones get caught
+  refetch(newParams)
+```
+
 ###### - subscribe
+
+Subscription to change the state of the item
+
+```ts
+  const state = null;
+  
+  const unsubscribe = storasyClient.subscribe('key', item => state = item.state);
+```
+
+#### StorasyItem
+
+```ts
+  import { storasyClient } from '';
+
+  const item = storasyClient.get('key');
+```
 
 ## Examples
 
