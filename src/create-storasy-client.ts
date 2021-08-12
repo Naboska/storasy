@@ -1,16 +1,10 @@
 import { createItem } from './create-item';
 import { createWorker } from './create-worker';
-import type {
-  TStorasyClient,
-  IStorasyItem,
-  TStorasyItemSubscribe,
-  TStorasyItemEditState,
-} from './types';
-import { TStorasyRunOptions } from './types';
+import type { TStorasyClient, TStorasyClientOptions, IStorasyItem } from './types';
 
 export const createStorasyClient = <AbortController = unknown>({
   abortController,
-}: TStorasyClient<AbortController> = {}) => {
+}: TStorasyClientOptions<AbortController> = {}): TStorasyClient => {
   const instance: Map<string, IStorasyItem<unknown, AbortController>> = new Map();
 
   const _getStore = <ItemState>() =>
@@ -42,14 +36,14 @@ export const createStorasyClient = <AbortController = unknown>({
   return {
     get: _getItem,
     create: _createItem,
-    include: (key: string) => instance.has(key),
-    put<T>(key: string, data: T | TStorasyItemEditState<T>) {
-      const store = _getStore<T>();
+    include: key => instance.has(key),
+    put<ItemState>(key, data) {
+      const store = _getStore<ItemState>();
       const include = store.has(key);
 
       if (include) store.get(key).putState(data);
     },
-    delete(key: string) {
+    delete(key) {
       if (!instance.has(key)) return true;
 
       const item = instance.get(key);
@@ -61,12 +55,8 @@ export const createStorasyClient = <AbortController = unknown>({
 
       return false;
     },
-    run<ItemState, Params = any>(
-      key: string,
-      generator: (params?: Params) => Generator<any>,
-      options: TStorasyRunOptions<Params> = {}
-    ) {
-      const { enabled = true, params } = options;
+    run<ItemState, Params = any>(key, generator, options) {
+      const { enabled = true, params } = options ?? {};
 
       const runGenerator = (newParams?: Params) =>
         worker<ItemState>(key, generator(newParams ?? params));
@@ -75,11 +65,11 @@ export const createStorasyClient = <AbortController = unknown>({
 
       return { refetch: runGenerator };
     },
-    subscribe<ItemState>(key: string, subscribe: TStorasyItemSubscribe<ItemState>) {
+    subscribe<ItemState>(key, subscriber) {
       const include = instance.has(key);
       const item = include ? _getItem<ItemState>(key) : _createItem<ItemState>(key);
 
-      return item.subscribe(subscribe);
+      return item.subscribe(subscriber);
     },
   };
 };

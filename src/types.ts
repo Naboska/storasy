@@ -5,13 +5,36 @@ export type TAbortController<AbortController> = {
   checkOnError: (error: Error) => boolean;
 };
 
-export type TStorasyClient<AbortController> = {
+export type TStorasyClientOptions<AbortController> = {
   abortController?: TAbortController<AbortController>;
+};
+
+type TOnSubscribeCallback = () => void;
+
+export type TStorasyClient = {
+  get: <ItemState>(key: string) => IStorasyItem<ItemState> | null;
+  create: <ItemState>(key: string, initial?: ItemState) => IStorasyItem<ItemState>;
+  include: (key: string) => boolean;
+  put: <ItemState>(key: string, data: ItemState | TStorasyItemEditState<ItemState>) => void;
+  delete: (key: string) => boolean;
+  run: <ItemState, Params = any>(
+    key: string,
+    generator: (params?: Params) => Generator<any>,
+    options?: TStorasyRunOptions<Params>
+  ) => TStorasyRunner;
+  subscribe: <ItemState>(
+    key: string,
+    subscribe: TStorasyItemSubscribe<ItemState>
+  ) => TOnSubscribeCallback;
 };
 
 export type TStorasyRunOptions<Params> = {
   enabled?: boolean;
   params?: Params;
+};
+
+export type TStorasyRunner<Params = any> = {
+  refetch: (params?: Params) => void;
 };
 
 export type TStorasyFetcher<Params = unknown, Signal = AbortSignal> = {
@@ -48,7 +71,7 @@ export interface IStorasyItem<ItemState, AbortController = unknown> {
     newStatus: Exclude<TStorasyItemStatus, 'stale'>,
     newError?: string
   ) => TStorasyItem<ItemState>;
-  subscribe: (sub: TStorasyItemSubscribe<ItemState>) => () => void;
+  subscribe: (sub: TStorasyItemSubscribe<ItemState>) => TOnSubscribeCallback;
   getAbortController: () => AbortController | undefined;
   setAbortController: (newController: AbortController) => AbortController;
 }

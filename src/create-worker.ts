@@ -1,7 +1,10 @@
 import { isPromise } from './helpers';
-import type { TStorasyClient, TAbortController, IStorasyItem } from './types';
+import type { TStorasyClientOptions, TAbortController, IStorasyItem } from './types';
 
-type TCreateWorker<AbortController> = Pick<TStorasyClient<AbortController>, 'abortController'> & {
+type TCreateWorker<AbortController> = Pick<
+  TStorasyClientOptions<AbortController>,
+  'abortController'
+> & {
   getStore: <T>() => Map<string, IStorasyItem<T, AbortController>>;
 };
 

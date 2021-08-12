@@ -4,6 +4,7 @@ export { select, put, go, call } from './utils';
 
 export type {
   TStorasyClient,
+  TStorasyClientOptions,
   TStorasyFetcher,
   TStorasyItemStatus,
   TStorasyItemEditState,
