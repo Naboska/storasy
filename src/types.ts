@@ -2,6 +2,7 @@ export type TAbortController<AbortController> = {
   createAbortController: () => AbortController;
   getSignal: (controller: AbortController) => any;
   abort: (controller: AbortController) => any;
+  checkOnError: (error: Error) => boolean;
 };
 
 export type TStorasyClient<AbortController> = {
@@ -13,7 +14,7 @@ export type TStorasyRunOptions<Params> = {
   params?: Params;
 };
 
-export type TStorasyFetcher<Params, Signal = AbortSignal> = {
+export type TStorasyFetcher<Params = unknown, Signal = AbortSignal> = {
   params: Params;
   signal: Signal;
 };
@@ -37,6 +38,7 @@ export type TStorasyItemEditState<ItemState> = (
 ) => ItemState | undefined;
 
 export interface IStorasyItem<ItemState, AbortController = unknown> {
+  subscribersLength: number;
   getItem: () => TStorasyItem<ItemState>;
   getState: () => ItemState;
   putState: (newState?: ItemState | TStorasyItemEditState<ItemState>) => ItemState | undefined;

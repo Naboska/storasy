@@ -1,11 +1,20 @@
 {
   "compilerOptions": {
     "outDir": "dist",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "lib": ["dom", "es2015", "es2017", "esnext"],
+    "baseUrl": "./src",
+    "allowJs": true,
     "esModuleInterop": true,
-    "declaration": true,
-    "skipLibCheck": true,
-    "downlevelIteration": true,
-    "lib": ["ESNext", "dom"],
-    "target": "es5"
-  }
+    "allowSyntheticDefaultImports": true,
+    "declaration": true
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts"
+  ]
 }

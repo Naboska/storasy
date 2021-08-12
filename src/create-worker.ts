@@ -1,29 +1,28 @@
 import { isPromise } from './helpers';
-import { ABORT_CONTROLLER_MESSAGE } from './constants';
 import type { TStorasyClient, TAbortController, IStorasyItem } from './types';
 
-type TCreateAsync<AbortController> = Pick<TStorasyClient<AbortController>, 'abortController'> & {
+type TCreateWorker<AbortController> = Pick<TStorasyClient<AbortController>, 'abortController'> & {
   getStore: <T>() => Map<string, IStorasyItem<T, AbortController>>;
 };
 
-type TError = Error & { status: string };
-
-const getInitialAc = (): TAbortController<AbortController> => ({
+export const getAbortControllerInstance = (): TAbortController<AbortController> => ({
   createAbortController: () => new AbortController(),
   getSignal: controller => controller.signal,
   abort: controller => controller.abort(),
+  checkOnError: error => error.name === 'AbortError',
 });
 
-export const createAsync = <AbortController>({
+export const createWorker = <AbortController = unknown>({
   getStore,
   abortController,
-}: TCreateAsync<AbortController>) => {
-  const ac = abortController ?? getInitialAc();
+}: TCreateWorker<AbortController>) => {
+  const abortControllerInstance = abortController ?? getAbortControllerInstance();
 
-  const _createGeneratorError = (key: string, generator: Generator<any>, error: TError) => {
+  const _createGeneratorError = (key: string, generator: Generator, error: Error) => {
     const item = getStore<unknown>().get(key);
+    const isAbortError = abortControllerInstance.checkOnError(error);
 
-    if (error.message === ABORT_CONTROLLER_MESSAGE) return generator.return(error);
+    if (isAbortError) return generator.return(error);
 
     if (item) {
       const state = item.getState();
@@ -34,8 +33,8 @@ export const createAsync = <AbortController>({
 
   const _runner = <T>(
     key: string,
-    generator: Generator<any>,
-    payload?: IteratorResult<any> | any[]
+    generator: Generator,
+    payload?: IteratorResult<unknown> | unknown[]
   ) => {
     const store = getStore<T>();
     const item = store.get(key);
@@ -43,7 +42,10 @@ export const createAsync = <AbortController>({
     const isProcessing = !result.done && store.has(key);
 
     if (isProcessing) {
-      const action = typeof result.value === 'function' ? result.value(item, ac) : result.value;
+      const action =
+        typeof result.value === 'function'
+          ? result.value(item, abortControllerInstance)
+          : result.value;
 
       if (!isPromise(action)) return _runner(key, generator, payload);
 
@@ -56,7 +58,5 @@ export const createAsync = <AbortController>({
     return 'final';
   };
 
-  return {
-    runner: _runner,
-  };
+  return _runner;
 };

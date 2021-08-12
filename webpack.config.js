@@ -6,9 +6,14 @@ module.exports = {
   mode: 'production',
   entry: getPath('src', 'index.ts'),
   output: {
+    umdNamedDefine: true,
     libraryTarget: 'umd',
     filename: 'storasy.production.js',
     path: getPath('dist', 'umd'),
+    library: 'storasy',
+  },
+  optimization: {
+    moduleIds: 'named',
   },
   resolve: {
     extensions: ['.js', '.ts'],
