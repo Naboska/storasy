@@ -1,24 +1,23 @@
-export type TStoryEvent = {
-  eventName: string;
-  args: any[];
-};
+export type TStoryEvent<Args = any> = { eventName: string; args: Args };
 
-export type TStoryEventBuilder = ((...args: any[]) => any) & { eventName: string };
+export interface IStoryEventBuilder<Args = any> {
+  (args?: Args): TStoryEvent<Args>;
+  eventName: string;
+}
 
 export type TGenerator = Generator | AsyncGenerator;
 
-export type TGeneratorFn = (params?: any[]) => TGenerator;
+export type TGeneratorFn = (args: any) => TGenerator;
 
-export type TStoryState = Record<string, unknown>;
+export type TMetaInfo<State = any> = { name?: string; state?: State };
 
-export type TMetaInfo<State extends TStoryState> = { name?: string; initialState?: State };
+export type TSubscriber<State = any> = (state: State) => void;
 
-export type TSubscriber<State extends TStoryState> = (state: State) => void;
-
-export type TStoryBuilderOptions<State extends TStoryState = TStoryState> = {
+export type TStoryBuilderOptions<State = any> = {
   constructor: (initFn: () => void) => void;
   meta: TMetaInfo<State>;
-  on: (event: TStoryEventBuilder, callback: TGeneratorFn) => void;
+  on: (event: IStoryEventBuilder, callback: TGeneratorFn) => void;
   getState: () => State;
-  copyState: (partial: Partial<State>) => void;
 };
+
+export type TStoryBuild = (() => void) | null;

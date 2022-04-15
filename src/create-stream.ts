@@ -1,41 +1,31 @@
-import type { TGeneratorFn, TStoryEvent, TStoryEventBuilder, TGenerator } from './types';
+import type { TGeneratorFn, TStoryEvent, IStoryEventBuilder, TGenerator } from './types';
 import { isFn, isPromise } from './helpers';
 
 export const createStream = () => {
-  const _eventMap: Array<[TStoryEventBuilder, TGeneratorFn]> = [];
+  const _eventMap: Array<[IStoryEventBuilder, TGeneratorFn]> = [];
   const _stack: TGenerator[] = [];
   let _subscribers: Array<(value: any) => void> = [];
-  let _isEnd = false;
   let _isProcessing = false;
 
-  const _start = () => {
-    _isEnd = false;
-  };
-
   const stop = () => {
-    _isEnd = true;
     if (_subscribers.length) _subscribers = [];
   };
 
-  const on = (event: TStoryEventBuilder, callback: TGeneratorFn) => {
+  const on = (event: IStoryEventBuilder, callback: TGeneratorFn) => {
     _eventMap.push([event, callback]);
   };
 
   const listen = (listener: (value: any) => void) => {
-    if (_isEnd) _start();
     _subscribers = [..._subscribers.filter(obs => obs !== listener), listener];
 
     return () => {
       _subscribers = _subscribers.filter(obs => obs !== listener);
-      if (!_subscribers.length) stop();
     };
   };
 
   const add = (event: TStoryEvent) => {
-    if (_isEnd) return;
-
     const foundedEvent = _eventMap.find(([{ eventName }]) => eventName === event.eventName);
-    if (foundedEvent) _next(foundedEvent[1](...event.args));
+    if (foundedEvent) _next(foundedEvent[1](event.args));
   };
 
   const _next = (generator: Generator | AsyncGenerator) => {
@@ -64,8 +54,6 @@ export const createStream = () => {
   };
 
   const _run = async (generator: Generator | AsyncGenerator): Promise<unknown> => {
-    if (_isEnd) return _endTask();
-
     _startTask();
 
     const result = generator.next();
