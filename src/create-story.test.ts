@@ -38,6 +38,11 @@ const setup = (initialValue = 0) => {
 };
 
 describe('create-story test', () => {
+  test('should create without constructor', () => {
+    const story = createStory(() => {});
+    expect(story.name).toBe('');
+  });
+
   test('should name be set', () => {
     const { story } = setup();
     expect(story.name).toBe('increment-story');
