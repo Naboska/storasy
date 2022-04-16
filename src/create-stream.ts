@@ -8,7 +8,7 @@ export const createStream = () => {
   let _isProcessing = false;
 
   const stop = () => {
-    if (_subscribers.length) _subscribers = [];
+    _subscribers = [];
   };
 
   const on = (event: IStoryEventBuilder, callback: TGeneratorFn) => {
@@ -80,9 +80,9 @@ export const createStream = () => {
   };
 
   return {
-    stop,
     listen,
     on,
     add,
+    stop,
   };
 };

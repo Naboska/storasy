@@ -1,5 +1,6 @@
 import { createStory } from './create-story';
 import { createStoryEvent } from './create-story-event';
+import * as typeError from './constants';
 
 const setup = (initialValue = 0) => {
   const incrementEvent = createStoryEvent('increment');
@@ -38,9 +39,18 @@ const setup = (initialValue = 0) => {
 };
 
 describe('create-story test', () => {
-  test('should create without constructor', () => {
-    const story = createStory(() => {});
-    expect(story.name).toBe('');
+  test('should builder error be called', () => {
+    expect(createStory).toThrow(typeError.STORASY_BUILDER_ERROR);
+  });
+
+  test('should story constructor error be called', () => {
+    const story = () => createStory(() => {});
+    expect(story).toThrow(typeError.STORASY_CONSTRUCTOR_ERROR);
+  });
+
+  test('should story name error be called', () => {
+    const story = () => createStory(story => story.constructor(() => {}));
+    expect(story).toThrow(typeError.STORASY_NULL_NAME_ERROR);
   });
 
   test('should name be set', () => {
